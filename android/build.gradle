@@ -27,6 +27,8 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 34
 
+    namespace "com.example.flutter_notification_listener"
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
