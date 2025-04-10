@@ -223,6 +223,7 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
             .setSmallIcon(imageId)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setOngoing(true)
             .build()
 
         Log.d(TAG, "promote the service to foreground")
