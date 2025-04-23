@@ -126,6 +126,11 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
         instance = this
 
         Log.i(TAG, "notification listener service onCreate")
+        synchronized(sServiceStarted) {
+            // we should to update
+            Log.d(TAG, "service's flutter engine is null, should update one")
+            updateFlutterEngine(this)
+        }
         val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
         val allowRun = prefs.getBoolean("flutter.allowRunService", false)
         if (!allowRun) {
