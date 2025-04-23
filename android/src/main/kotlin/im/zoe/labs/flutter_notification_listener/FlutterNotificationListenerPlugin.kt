@@ -3,6 +3,7 @@ package im.zoe.labs.flutter_notification_listener
 import android.app.ActivityManager
 import android.content.*
 import android.content.Context.RECEIVER_EXPORTED
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
@@ -168,12 +169,17 @@ class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCal
     fun startService(context: Context, cfg: Utils.PromoteServiceConfig): Boolean {
       // store the config
       cfg.save(context)
+      val componentName = ComponentName(context, NotificationsHandlerService::class.java)
+      context.packageManager.setComponentEnabledSetting(
+              componentName,
+              PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+              PackageManager.DONT_KILL_APP
+      )
       return internalStartService(context, cfg)
     }
 
     fun stopService(context: Context): Boolean {
       if (!isServiceRunning(context, NotificationsHandlerService::class.java)) return true
-
       val intent = Intent(context, NotificationsHandlerService::class.java)
       intent.action = NotificationsHandlerService.ACTION_SHUTDOWN
       context.startService(intent)

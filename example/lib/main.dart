@@ -100,7 +100,7 @@ class _NotificationsLogState extends State<NotificationsLog> {
 
     if (!isRunning) {
       await NotificationsListener.startService(
-          foreground: false,
+          foreground: true,
           title: "Listener Running",
           description: "Welcome to having me");
     }

@@ -283,7 +283,7 @@ class Utils {
     }
 
     class PromoteServiceConfig {
-        var foreground: Boolean? = false
+        var foreground: Boolean? = true
         var title: String? = "Flutter Notification Listener"
         var subTitle: String? =  null
         var description: String? = "Let's scraping the notifications ..."
@@ -330,17 +330,12 @@ class Utils {
             fun fromString(str: String = "{}"): PromoteServiceConfig {
                 val cfg = PromoteServiceConfig()
                 val map = JSONObject(str)
-                try {
-                    val map = JSONObject(str)
-            
-                    cfg.foreground = if (map.has("foreground")) map.getBoolean("foreground") else true
-                    cfg.title = map.optString("title", "Flutter Notification Listener")
-                    cfg.subTitle = map.optString("subTitle", null)
-                    cfg.description = map.optString("description", "Let's scraping the notifications ...")
-                    cfg.showWhen = if (map.has("showWhen")) map.getBoolean("showWhen") else false
-            
-                } catch (e: Exception) {
-                    Log.e(TAG, "Failed to parse PromoteServiceConfig: $str", e)
+                map.let { m ->
+                    m["foreground"].let { cfg.foreground = it as Boolean? }
+                    m["title"].let { cfg.title = it as String? }
+                    m["subTitle"].let { cfg.subTitle = it as String? }
+                    m["description"].let { cfg.description = it as String? }
+                    m["showWhen"].let { cfg.showWhen = it as Boolean? }
                 }
                 return cfg
             }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## 1.3.4
 
 - chore: support gradle plugin version
@@ -15,6 +16,8 @@
 - chore: imporve code style
 - bugfix: fix foreground when first started, #16
 
+=======
+>>>>>>> parent of fccff85 (release v1.3.1, improve code and fix foreground when first started.)
 ## 1.3.0
 
 - feature: support full notification information

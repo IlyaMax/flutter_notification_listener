@@ -1,6 +1,10 @@
 name: flutter_notification_listener
 description:  Flutter plugin to listen for all incoming notifications for Android.
+<<<<<<< HEAD
 version: 1.3.4
+=======
+version: 1.3.0
+>>>>>>> parent of fccff85 (release v1.3.1, improve code and fix foreground when first started.)
 homepage: https://github.com/jiusanzhou/flutter_notification_listener
 
 environment:
