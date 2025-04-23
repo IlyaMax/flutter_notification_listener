@@ -126,6 +126,12 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
         instance = this
 
         Log.i(TAG, "notification listener service onCreate")
+        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        val allowRun = prefs.getBoolean("flutter.allowRunService", false)
+        if (!allowRun) {
+            Log.w(TAG, "Service started by system, but skipping foreground promotion.")
+            return
+        }
         startListenerService(this)
     }
 

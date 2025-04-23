@@ -169,12 +169,6 @@ class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCal
     fun startService(context: Context, cfg: Utils.PromoteServiceConfig): Boolean {
       // store the config
       cfg.save(context)
-      val componentName = ComponentName(context, NotificationsHandlerService::class.java)
-      context.packageManager.setComponentEnabledSetting(
-              componentName,
-              PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-              PackageManager.DONT_KILL_APP
-      )
       return internalStartService(context, cfg)
     }
 
