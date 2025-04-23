@@ -168,6 +168,7 @@ class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCal
 
     fun startService(context: Context, cfg: Utils.PromoteServiceConfig): Boolean {
       // store the config
+      Log.i("NotificationsHandlerService", "saving config")
       cfg.save(context)
       return internalStartService(context, cfg)
     }
@@ -212,6 +213,7 @@ class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCal
         return result.success(true)
       }
       "plugin.startService" -> {
+        Log.i("NotificationsHandlerService", "plugin.startService handler")
         val cfg = Utils.PromoteServiceConfig.fromMap(call.arguments as Map<*, *>)
         return result.success(startService(mContext, cfg))
       }
