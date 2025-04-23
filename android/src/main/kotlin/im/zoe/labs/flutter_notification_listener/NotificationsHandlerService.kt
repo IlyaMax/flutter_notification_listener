@@ -460,10 +460,6 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
             // TODO: take from intent, currently just load form store
             promoteToForeground(Utils.PromoteServiceConfig.load(context))
 
-            // we should to update
-            Log.d(TAG, "service's flutter engine is null, should update one")
-            updateFlutterEngine(context)
-
             sServiceStarted.set(true)
         }
         Log.d(TAG, "service start finished")
