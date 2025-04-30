@@ -244,6 +244,7 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
 
         Log.d(TAG, "promote the service to foreground")
         startForeground(ONGOING_NOTIFICATION_ID, notification)
+        startPeriodicTick()
 
         return true
     }
