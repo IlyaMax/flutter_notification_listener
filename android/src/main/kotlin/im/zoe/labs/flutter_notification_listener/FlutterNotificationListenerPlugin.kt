@@ -23,9 +23,9 @@ import java.util.*
 class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
   private var eventSink: EventChannel.EventSink? = null
 
-  private var methodChannel: MethodChannel? = null 
-  private var eventChannel: EventChannel? = null 
-  private val flutterJNI: FlutterJNI =  FlutterJNI() 
+  private var methodChannel: MethodChannel? = null
+  private var eventChannel: EventChannel? = null
+  private val flutterJNI: FlutterJNI =  FlutterJNI()
 
   private lateinit var mContext: Context
 
@@ -49,7 +49,7 @@ class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCal
       event.setStreamHandler(this)
     }
     Log.i(TAG, "Attaching FlutterJNI to native")
-    flutterJNI.attachToNative() 
+    flutterJNI.attachToNative()
 
     // store the flutter engine
     val engine = flutterPluginBinding.flutterEngine
@@ -70,14 +70,14 @@ class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCal
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     val method = methodChannel
     if (method != null) {
-      method.setMethodCallHandler(null) 
-      methodChannel = null 
+      method.setMethodCallHandler(null)
+      methodChannel = null
     }
 
     val event = eventChannel
     if (event != null) {
-      event.setStreamHandler(null) 
-      eventChannel = null 
+      event.setStreamHandler(null)
+      eventChannel = null
     }
 
     Log.i(TAG, "Detaching FlutterJNI from native")
@@ -108,6 +108,7 @@ class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCal
     const val SHARED_PREFERENCES_KEY = "flutter_notification_cache"
 
     const val CALLBACK_DISPATCHER_HANDLE_KEY = "callback_dispatch_handler"
+    const val PERIODIC_CALLBACK_HANDLE_KEY = "callback_periodic"
     const val PROMOTE_SERVICE_ARGS_KEY = "promote_service_args"
     const val CALLBACK_HANDLE_KEY = "callback_handler"
 
@@ -122,11 +123,14 @@ class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCal
       }
     }
 
-    private fun initialize(context: Context, cbId: Long) {
+    private fun initialize(context: Context, args: Map<String, Any?>) {
+      val dispatcherId = args["dispatcherHandle"] as? Long ?: 0L
+      val periodicCallbackId = args["periodicCallbackHandle"] as? Long ?: 0L
       Log.d(TAG, "plugin init: install callback and notify the service flutter engine changed")
       context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
         .edit()
-        .putLong(CALLBACK_DISPATCHER_HANDLE_KEY, cbId)
+        .putLong(CALLBACK_DISPATCHER_HANDLE_KEY, dispatcherId)
+        .putLong(PERIODIC_CALLBACK_HANDLE_KEY, periodicCallbackId)
         .apply()
 
       // TODO: update the flutter engine
@@ -208,9 +212,15 @@ class FlutterNotificationListenerPlugin : FlutterPlugin, MethodChannel.MethodCal
   override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
     when (call.method) {
       "plugin.initialize" -> {
-        val cbId = call.arguments<Long?>()!!
-        initialize(mContext, cbId)
-        return result.success(true)
+        val args = call.arguments as? Map<String, Any?>
+        if (args == null){
+            Log.d("NotificationsHandlerService","No args for initialization")
+            return result.success(false)
+        }else{
+            initialize(mContext, args)
+            return result.success(true)
+
+        }
       }
       "plugin.startService" -> {
         Log.i("NotificationsHandlerService", "plugin.startService handler")

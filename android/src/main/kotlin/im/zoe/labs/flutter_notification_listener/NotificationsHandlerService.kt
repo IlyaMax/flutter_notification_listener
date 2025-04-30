@@ -36,6 +36,8 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
     private val queue = ArrayDeque<NotificationEvent>()
     private lateinit var mBackgroundChannel: MethodChannel
     private lateinit var mContext: Context
+    private var periodicHandler: Handler? = null
+    private var periodicRunnable: Runnable? = null
 
     // notification event cache: packageName_id -> event
     private val eventsCache = HashMap<String, NotificationEvent>()
@@ -142,6 +144,9 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
 
     override fun onDestroy() {
         super.onDestroy()
+        periodicHandler?.removeCallbacks(periodicRunnable!!)
+        periodicHandler = null
+        periodicRunnable = null
         Log.i(TAG, "notification listener service onDestroy")
         val bdi = Intent(mContext, RebootBroadcastReceiver::class.java)
         // remove notification
@@ -241,6 +246,25 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
         startForeground(ONGOING_NOTIFICATION_ID, notification)
 
         return true
+    }
+
+    private fun startPeriodicTick() {
+        Log.d(TAG, "Starting 30-second periodic tick")
+
+        periodicHandler = Handler(mainLooper)
+        periodicRunnable = object : Runnable {
+            override fun run() {
+                try {
+                    val periodicHandle = getSharedPreferences(FlutterNotificationListenerPlugin.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
+                            .getLong(FlutterNotificationListenerPlugin.PERIODIC_CALLBACK_HANDLE_KEY, 0L)
+                    mBackgroundChannel.invokeMethod("periodic_tick", periodicHandle)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error sending periodic tick", e)
+                }
+                periodicHandler?.postDelayed(this, 30_000) // every 30 seconds
+            }
+        }
+        periodicHandler?.postDelayed(periodicRunnable!!, 30_000)
     }
 
     private fun demoteToBackground(): Boolean {

@@ -49,11 +49,17 @@ class NotificationsListener {
   /// Initialize the plugin and request relevant permissions from the user.
   static Future<void> initialize({
     EventCallbackFunc callbackHandle = _defaultCallbackHandle,
+    required VoidCallback periodicCallbackHandle,
   }) async {
     final CallbackHandle _callbackDispatch =
         PluginUtilities.getCallbackHandle(callbackDispatcher)!;
     await _methodChannel.invokeMethod(
-        'plugin.initialize', _callbackDispatch.toRawHandle());
+      'plugin.initialize',
+      {
+        'dispatcherHandle': _callbackDispatch.toRawHandle(),
+        'periodicCallbackHandle': PluginUtilities.getCallbackHandle(periodicCallbackHandle)!.toRawHandle(),
+      },
+    );
 
     // call this call back in the current engine
     // this is important to use ui flutter engine access `service.channel`
@@ -186,6 +192,17 @@ void callbackDispatcher({inited = true}) {
 
             callback(evt);
           }
+          break;
+        case 'periodic_tick':
+          final int rawHandle = call.arguments;
+          final Function? callback = PluginUtilities.getCallbackFromHandle(
+            CallbackHandle.fromRawHandle(rawHandle),
+          );
+          if (callback == null) {
+            print("callback is not register");
+            return;
+          }
+          callback();
           break;
         default:
           {
