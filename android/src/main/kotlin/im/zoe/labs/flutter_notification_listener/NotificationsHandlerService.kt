@@ -256,6 +256,7 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
         periodicRunnable = object : Runnable {
             override fun run() {
                 try {
+                    Log.d(TAG, "Periodic callback was triggered")
                     val periodicHandle = getSharedPreferences(FlutterNotificationListenerPlugin.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
                             .getLong(FlutterNotificationListenerPlugin.PERIODIC_CALLBACK_HANDLE_KEY, 0L)
                     mBackgroundChannel.invokeMethod("periodic_tick", periodicHandle)
