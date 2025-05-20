@@ -251,7 +251,7 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
     }
 
     private fun startPeriodicTick() {
-        Log.d(TAG, "Starting 30-second periodic tick")
+        Log.d(TAG, "Starting periodic tick")
 
         periodicHandler = Handler(mainLooper)
         periodicRunnable = object : Runnable {
@@ -264,10 +264,10 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
                 } catch (e: Exception) {
                     Log.e(TAG, "Error sending periodic tick", e)
                 }
-                periodicHandler?.postDelayed(this, 30_000) // every 30 seconds
+                periodicHandler?.postDelayed(this, 120_000)
             }
         }
-        periodicHandler?.postDelayed(periodicRunnable!!, 30_000)
+        periodicHandler?.postDelayed(periodicRunnable!!, 120_000)
     }
 
     private fun demoteToBackground(): Boolean {
